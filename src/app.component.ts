@@ -1,17 +1,21 @@
 import { Component, ChangeDetectionStrategy, signal, computed, effect } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Pet, VetClinic, MedicalRecord, RecordType } from './models';
+import { Pet, VetClinic, MedicalRecord, RecordType, Food } from './models';
+
+const DEFAULT_PHOTO_URL = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NjYyI+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTIuNSw0QTEuNSwxLjUsMCwwLDEsMTQsNS41VjYuODhBMzQ5LDM0OSwwLDAsMSwxNy41LDEwLjI1VjExQTEuNSwxLjUsMCwwLDEsMTYsMTIuNUg4QTEuNSwxLjUsMCwwLDEsNi41LDExVjEwLjI1QTMuNDksMy40OSwwLDAsMSwxMCw2Ljg4VjUuNUExLjUsMS41LDAsMCwxLDExLjUsNGgxbTQuNSw0QTEuNSwxLjUsMCwwLDAsMTksOC41VjExYTEuNSwxLjUsMCwwLDAsMS41LDEuNWgxQTEuNSwxLjUsMCwwLDAsMjIsMTFWOS41QTEuNSwxLjUsMCwwLDAsMjAuNSw4aC0xTTUuNSw4QTEuNSwxLjUsMCwwLDAsNCw5LjVWMTEhMS41LDEuNSwwLDAsMCwxLjUsMS41aDFBMS41LDEuNSwwLDAsMCw4LDExVjkuNUExLjUsMS41LDAsMCwwLDYuNSw4aC0xTTExLDE1LjVBMS41LDEuNSwwLDAsMCw5LjUsMTRWMTEuNUExLjUsMS41LDAsMCwwLDgsMTBoNEExLjUsMS41LDAsMCwwLDEzLjUsMTEuNVYxNEExLjUsMS41LDAsMCwwLDE1LDE1LjVoLTFBMS41LDEuNSwwLDAsMSwxMi41LDE3aC0xQTEuNSwxLjUsMCwwLDEsMTEsMTUuNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIgLz48L3N2Zz4=';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, NgOptimizedImage]
+  imports: [CommonModule, FormsModule]
 })
 export class AppComponent {
   // --- STATE SIGNALS ---
+
+  isLoading = signal(true);
 
   // Pet Data
   pets = signal<Pet[]>([
@@ -42,6 +46,11 @@ export class AppComponent {
     { id: 8, petId: 2, type: 'Vacuna', date: '2022-07-15', doctor: 'Dr. Davis', notes: 'Vacuna Leucemia Felina', nextDueDate: '2023-07-15' },
   ]);
 
+  // Food Records Data
+  foodRecords = signal<Food[]>([
+    { id: 1, petId: 1, name: 'Royal Canin Golden Retriever Adult', weightKg: 12, photoUrl: 'https://picsum.photos/seed/food1/400/400' },
+  ]);
+
   // Modal State for Medical Records
   showRecordModal = signal(false);
   editingRecordId = signal<number | null>(null);
@@ -59,6 +68,15 @@ export class AppComponent {
   showPetModal = signal(false);
   editingPetId = signal<number | null>(null);
   petFormModel = signal<Omit<Pet, 'id'>>({ name: '', breed: '', dob: '', photoUrl: '' });
+
+  // Modal State for Food
+  showFoodModal = signal(false);
+  editingFoodId = signal<number | null>(null);
+  foodFormModel = signal<Omit<Food, 'id' | 'petId'>>({
+    name: '',
+    weightKg: 0,
+    photoUrl: DEFAULT_PHOTO_URL
+  });
 
   // Filter State
   filterType = signal<RecordType | null>(null);
@@ -127,11 +145,22 @@ export class AppComponent {
     return records;
   });
 
+  selectedPetFood = computed(() => {
+    const pet = this.selectedPet();
+    if (!pet) return [];
+    return this.foodRecords().filter(f => f.petId === pet.id);
+  });
+
+  constructor() {
+    setTimeout(() => {
+      this.isLoading.set(false);
+    }, 5000);
+  }
+
   // --- METHODS ---
 
-  selectPet(event: Event) {
-    const petId = (event.target as HTMLSelectElement).value;
-    this.selectedPetId.set(Number(petId));
+  selectPetById(id: number) {
+    this.selectedPetId.set(id);
   }
   
   // Filter Methods
@@ -208,7 +237,7 @@ export class AppComponent {
         name: '',
         breed: '',
         dob: new Date().toISOString().split('T')[0],
-        photoUrl: `https://picsum.photos/seed/${Date.now()}/400/400`
+        photoUrl: DEFAULT_PHOTO_URL
     });
     this.showPetModal.set(true);
   }
@@ -258,6 +287,91 @@ export class AppComponent {
         }
 
         this.showPetModal.set(false);
+    }
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.petFormModel.update(model => ({
+          ...model,
+          photoUrl: e.target?.result as string
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // Food Modal Methods
+  openAddFoodModal() {
+    this.editingFoodId.set(null);
+    this.foodFormModel.set({
+      name: '',
+      weightKg: 1, // Default to 1kg
+      photoUrl: DEFAULT_PHOTO_URL
+    });
+    this.showFoodModal.set(true);
+  }
+
+  openEditFoodModal(food: Food) {
+    this.editingFoodId.set(food.id);
+    this.foodFormModel.set({
+      name: food.name,
+      weightKg: food.weightKg,
+      photoUrl: food.photoUrl
+    });
+    this.showFoodModal.set(true);
+  }
+
+  saveFood() {
+    const foodData = this.foodFormModel();
+    const petId = this.selectedPetId();
+
+    if (!foodData.name || foodData.weightKg <= 0) {
+      alert('Por favor completa el nombre y un peso válido.');
+      return;
+    }
+
+    const editingId = this.editingFoodId();
+    if (editingId !== null) {
+      this.foodRecords.update(foods =>
+        foods.map(f => (f.id === editingId ? { ...f, ...foodData, id: f.id, petId: f.petId } : f))
+      );
+    } else {
+      const newFoodId = Date.now();
+      this.foodRecords.update(foods => [
+        ...foods,
+        { ...foodData, id: newFoodId, petId: petId }
+      ]);
+    }
+    this.showFoodModal.set(false);
+  }
+  
+  deleteFood() {
+    const foodIdToDelete = this.editingFoodId();
+    if (foodIdToDelete === null) return;
+
+    if (confirm('¿Estás seguro de que quieres eliminar este registro de alimento?')) {
+      this.foodRecords.update(foods => foods.filter(f => f.id !== foodIdToDelete));
+      this.showFoodModal.set(false);
+    }
+  }
+  
+  onFoodPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.foodFormModel.update(model => ({
+          ...model,
+          photoUrl: e.target?.result as string
+        }));
+      };
+      reader.readAsDataURL(file);
     }
   }
 

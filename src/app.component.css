@@ -15,3 +15,12 @@
 .app-content::-webkit-scrollbar-thumb:hover {
   background-color: rgba(100, 116, 139, 0.5);
 }
+
+.pet-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.pet-selector {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}

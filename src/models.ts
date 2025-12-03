@@ -24,3 +24,11 @@ export interface MedicalRecord {
   notes: string;
   nextDueDate?: string; // YYYY-MM-DD for vaccines
 }
+
+export interface Food {
+  id: number;
+  petId: number;
+  name: string;
+  weightKg: number;
+  photoUrl: string;
+}
