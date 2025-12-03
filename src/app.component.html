@@ -1,0 +1,324 @@
+<!-- Mobile Phone Frame -->
+<div class="relative font-sans w-[390px] h-[844px] bg-slate-100 rounded-[60px] shadow-2xl overflow-hidden ring-4 ring-slate-800">
+  <div class="absolute inset-0 flex flex-col">
+    <!-- Header with Pet Selector -->
+    <header class="relative flex-shrink-0 bg-slate-100/80 backdrop-blur-lg z-10 px-6 pt-12 pb-4">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-3">
+          <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-1.383-.598 18.365 18.365 0 01-1.57-1.153 16.36 16.36 0 01-1.29-1.247A15.322 15.322 0 017 15.252a16.34 16.34 0 01-1.022-2.312c-.228-.63-.396-1.282-.52-1.952-.125-.674-.19-1.355-.19-2.037 0-.91.172-1.812.493-2.657a10.43 10.43 0 011.24-2.318 9.54 9.54 0 012.01-2.01A9.54 9.54 0 0112 3.499a9.54 9.54 0 012.318 1.24 9.54 9.54 0 012.01 2.01 10.43 10.43 0 011.24 2.318c.321.845.493 1.747.493 2.657 0 .682-.065 1.363-.19 2.037-.124.67-.292 1.322-.52 1.952a16.34 16.34 0 01-1.022 2.312 15.322 15.322 0 01-1.29 1.247 16.36 16.36 0 01-1.57 1.153 18.365 18.365 0 01-1.383.598l-.022.012-.007.004-.004.001a.752.752 0 01-.214 0z" />
+          </svg>
+          <h1 class="text-2xl font-bold text-slate-800">Mi Mascota</h1>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <select [ngModel]="selectedPetId()" (change)="selectPet($event)" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+          @for(pet of pets(); track pet.id) {
+          <option [value]="pet.id">{{ pet.name }}</option>
+          }
+        </select>
+        <button (click)="openAddPetModal()" class="flex-shrink-0 bg-slate-200 text-slate-800 px-3 py-2 rounded-md hover:bg-slate-300 transition-colors text-sm font-semibold">Añadir</button>
+      </div>
+    </header>
+
+    <!-- App Content (Scrollable) -->
+    <main class="flex-grow overflow-y-auto app-content p-6 space-y-6">
+      @if (selectedPet(); as pet) {
+      <!-- Pet Profile Card -->
+      <section class="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center text-center">
+        <div class="relative mb-4">
+          <img [ngSrc]="pet.photoUrl" width="120" height="120" alt="Foto de {{ pet.name }}" class="rounded-full border-4 border-blue-200" priority>
+          <button (click)="openEditPetModal()" class="absolute bottom-0 right-0 text-white bg-blue-600 p-2 rounded-full hover:bg-blue-700 transition-colors shadow-md">
+            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
+              <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
+            </svg>
+          </button>
+        </div>
+        <h2 class="text-3xl font-bold text-slate-900">{{ pet.name }}</h2>
+        <p class="text-slate-600 text-lg">{{ pet.breed }}</p>
+        <p class="text-slate-500">{{ petAge() }} años</p>
+      </section>
+
+      <!-- Vet Clinic Info -->
+      <section class="bg-white rounded-2xl shadow-lg p-6">
+        <h3 class="text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Clínica Veterinaria</h3>
+        <div class="space-y-3">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-slate-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" /></svg>
+            <span class="text-slate-700">{{ vetClinic().name }}</span>
+          </div>
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-slate-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            <span class="text-slate-700">{{ vetClinic().hours }}</span>
+          </div>
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-slate-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 6.75Z" /></svg>
+            <a href="tel:{{ vetClinic().phone }}" class="text-blue-600 hover:underline">{{ vetClinic().phone }}</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upcoming Controls -->
+      <section>
+        <h3 class="text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Próximos Controles</h3>
+        @if (upcomingControls().length > 0) {
+        <div class="space-y-3">
+          @for (record of upcomingControls(); track record.id) {
+          <div class="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-purple-500">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-bold text-slate-800">{{ record.notes }}</p>
+                <p class="text-sm text-slate-500">Dr(a). {{ record.doctor }}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="text-right">
+                    <p class="text-sm font-semibold text-purple-700">{{ record.date | date:'dd MMM yyyy' }}</p>
+                    @if(record.time) {
+                        <p class="text-xs text-slate-500 flex items-center justify-end gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3 h-3"><path fill-rule="evenodd" d="M8 1.75a.75.75 0 0 1 .75.75v5.5c0 .414-.336.75-.75.75h-3.5a.75.75 0 0 1 0-1.5h2.75V2.5A.75.75 0 0 1 8 1.75Z" clip-rule="evenodd" /></svg>
+                            {{ record.time }}
+                        </p>
+                    }
+                </div>
+                <button (click)="openEditRecordModal(record)" class="text-slate-400 hover:text-blue-600 p-1 rounded-full hover:bg-slate-100 transition-colors">
+                  <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
+                    <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="bg-white rounded-2xl shadow-lg p-6 text-center text-slate-500">
+          <p>No hay controles programados.</p>
+        </div>
+        }
+      </section>
+
+      <!-- Vaccination Schedule -->
+      <section>
+        <h3 class="text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Calendario de Vacunación</h3>
+        @if (vaccinationSchedule().length > 0) {
+        <div class="space-y-3">
+            @for (record of vaccinationSchedule(); track record.id) {
+            <div class="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-green-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-bold text-slate-800">{{ record.notes }}</p>
+                        <p class="text-sm text-slate-500">Aplicada: {{ record.date | date:'dd MMM yyyy' }}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        @if (record.nextDueDate) {
+                            <div class="text-right">
+                                <p class="text-sm font-semibold text-green-700">Próxima Dosis</p>
+                                <p class="text-xs text-slate-500">{{ record.nextDueDate | date:'dd MMM yyyy' }}</p>
+                            </div>
+                        }
+                        <button (click)="openEditRecordModal(record)" class="text-slate-400 hover:text-blue-600 p-1 rounded-full hover:bg-slate-100 transition-colors">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" /></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        } @else {
+        <div class="bg-white rounded-2xl shadow-lg p-6 text-center text-slate-500">
+            <p>No hay vacunas registradas.</p>
+        </div>
+        }
+      </section>
+
+      <!-- Medical History -->
+      <section>
+        <h3 class="text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Historial Médico</h3>
+        
+        <!-- Filters -->
+        <div class="bg-white rounded-2xl shadow-lg p-4 mb-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="filter-start-date" class="block text-xs font-medium text-slate-600 mb-1">Desde</label>
+                    <input type="date" id="filter-start-date" name="filter-start-date" [(ngModel)]="filterStartDate" class="block w-full text-sm border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md">
+                </div>
+                <div>
+                    <label for="filter-end-date" class="block text-xs font-medium text-slate-600 mb-1">Hasta</label>
+                    <input type="date" id="filter-end-date" name="filter-end-date" [(ngModel)]="filterEndDate" class="block w-full text-sm border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md">
+                </div>
+            </div>
+            <div class="flex gap-2 mt-3 text-xs">
+                <button (click)="setFilterType('Control')" [class]="'px-3 py-1 rounded-full transition-colors ' + (filterType() === 'Control' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700')">Control</button>
+                <button (click)="setFilterType('Vacuna')" [class]="'px-3 py-1 rounded-full transition-colors ' + (filterType() === 'Vacuna' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700')">Vacuna</button>
+                <button (click)="setFilterType('Medicación')" [class]="'px-3 py-1 rounded-full transition-colors ' + (filterType() === 'Medicación' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700')">Medicación</button>
+                <button (click)="clearFilters()" class="ml-auto text-slate-500 hover:text-blue-600 font-semibold">Limpiar</button>
+            </div>
+        </div>
+
+        @if (pastRecords().length > 0) {
+        <div class="space-y-3">
+          @for (record of pastRecords(); track record.id) {
+          <div class="bg-white rounded-2xl shadow-lg p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span [class]="'inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full ' + getRecordTypeClass(record.type)">
+                @switch (record.type) {
+                  @case ('Control') {
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-blue-800">
+                        <path d="M12.001 2.25A2.25 2.25 0 009.75 4.5v1.132a13.53 13.53 0 00-2.038.531 3 3 0 00-1.897 2.585 1.5 1.5 0 001.321 1.745 13.43 13.43 0 002.316.374c.24.01.48.022.722.036V12a2.25 2.25 0 004.5 0v-.628c.242-.014.482-.026.722-.036a13.433 13.433 0 002.316-.374 1.5 1.5 0 001.321-1.745 3 3 0 00-1.897-2.585A13.53 13.53 0 0014.25 5.632V4.5a2.25 2.25 0 00-2.25-2.25h-.001z" />
+                        <path d="M12 12.75a6 6 0 00-6 6v.75a.75.75 0 00.75.75h10.5a.75.75 0 00.75-.75V18.75a6 6 0 00-6-6z" />
+                    </svg>
+                  }
+                  @case ('Vacuna') {
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>
+                  }
+                  @case ('Medicación') {
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c.102.046.206.086.314.122s.21.071.318.101M9.75 3.104c.162.08.32.162.472.246s.3.17.442.258m6.29 6.355c-.892.892-2.04 1.34-3.174 1.34-1.134 0-2.282-.448-3.174-1.34m0-3.174c.892-.892 2.04-1.34 3.174-1.34 1.134 0 2.282.448 3.174 1.34m0 3.174-3.174 3.174m3.174-3.174 3.174-3.174" />
+                  </svg>
+                  }
+                }
+                <span>{{ record.type }}</span>
+              </span>
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-slate-500">{{ record.date | date:'dd MMM yyyy' }}</span>
+                <button (click)="openEditRecordModal(record)" class="text-slate-400 hover:text-blue-600 p-1 rounded-full hover:bg-slate-100 transition-colors">
+                  <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
+                    <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <p class="text-slate-700">{{ record.notes }}</p>
+            <p class="text-sm text-slate-500 mt-1">Atendido por Dr(a). {{ record.doctor }}</p>
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="bg-white rounded-2xl shadow-lg p-6 text-center text-slate-500">
+          <p>No hay registros que coincidan con los filtros.</p>
+        </div>
+        }
+      </section>
+      } @else {
+      <div class="bg-white rounded-2xl shadow-lg p-10 text-center">
+        <h2 class="text-2xl font-bold text-slate-700 mb-2">¡Bienvenido!</h2>
+        <p class="text-slate-500 mb-6">Parece que no tienes ninguna mascota registrada. <br> ¡Añade una para empezar!</p>
+        <button (click)="openAddPetModal()" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+          Añadir mi primera mascota
+        </button>
+      </div>
+      }
+    </main>
+  </div>
+
+  <!-- Add Record FAB -->
+  @if (selectedPet()) {
+  <button (click)="openAddRecordModal()" class="absolute bottom-6 right-6 bg-blue-600 text-white rounded-full p-4 shadow-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-transform duration-200 hover:scale-110 z-20">
+    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+  </button>
+  }
+
+  <!-- Add/Edit Record Modal -->
+  @if (showRecordModal()) {
+  <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" (click)="showRecordModal.set(false)">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm m-4" (click)="$event.stopPropagation()">
+      <h3 class="text-2xl font-bold text-slate-800 mb-4">
+        @if (editingRecordId() === null) {
+        Añadir Registro
+        } @else {
+        Editar Registro
+        }
+      </h3>
+      <form (ngSubmit)="saveRecord()" class="space-y-4">
+        <div>
+          <label for="type" class="block text-sm font-medium text-slate-700">Tipo de Registro</label>
+          <select id="type" name="type" [(ngModel)]="newRecord().type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+            @for(type of recordTypes; track type) {
+            <option [value]="type">{{ type }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label for="date" class="block text-sm font-medium text-slate-700">Fecha</label>
+          <input type="date" id="date" name="date" [(ngModel)]="newRecord().date" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+        </div>
+        @if (newRecord().type === 'Próximo Control') {
+          <div>
+            <label for="time" class="block text-sm font-medium text-slate-700">Hora</label>
+            <input type="time" id="time" name="time" [(ngModel)]="newRecord().time" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+          </div>
+        }
+        @if (newRecord().type === 'Vacuna') {
+          <div>
+            <label for="nextDueDate" class="block text-sm font-medium text-slate-700">Próxima Dosis</label>
+            <input type="date" id="nextDueDate" name="nextDueDate" [(ngModel)]="newRecord().nextDueDate" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+          </div>
+        }
+        <div>
+          <label for="doctor" class="block text-sm font-medium text-slate-700">Doctor</label>
+          <input type="text" id="doctor" name="doctor" [(ngModel)]="newRecord().doctor" placeholder="Dr. Smith" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+        </div>
+        <div>
+          <label for="notes" class="block text-sm font-medium text-slate-700">Notas</label>
+          <textarea id="notes" name="notes" rows="3" [(ngModel)]="newRecord().notes" [placeholder]="newRecord().type === 'Vacuna' ? 'Nombre de la vacuna...' : 'Detalles del control...'" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"></textarea>
+        </div>
+        <div class="flex justify-end space-x-3 pt-2">
+          <button type="button" (click)="showRecordModal.set(false)" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-lg hover:bg-slate-300 transition-colors">Cancelar</button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  <!-- Add/Edit Pet Modal -->
+  @if (showPetModal()) {
+  <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" (click)="showPetModal.set(false)">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm m-4" (click)="$event.stopPropagation()">
+      <h3 class="text-2xl font-bold text-slate-800 mb-4">
+        @if (editingPetId() === null) {
+        Añadir Mascota
+        } @else {
+        Editar Mascota
+        }
+      </h3>
+      <form (ngSubmit)="savePet()" class="space-y-4">
+        <div>
+          <label for="pet-name" class="block text-sm font-medium text-slate-700">Nombre</label>
+          <input type="text" id="pet-name" name="pet-name" [(ngModel)]="petFormModel().name" placeholder="Buddy" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+        </div>
+        <div>
+          <label for="pet-breed" class="block text-sm font-medium text-slate-700">Raza</label>
+          <input type="text" id="pet-breed" name="pet-breed" [(ngModel)]="petFormModel().breed" placeholder="Golden Retriever" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+        </div>
+        <div>
+          <label for="pet-dob" class="block text-sm font-medium text-slate-700">Fecha de Nacimiento</label>
+          <input type="date" id="pet-dob" name="pet-dob" [(ngModel)]="petFormModel().dob" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+        </div>
+        <div>
+          <label for="pet-photo" class="block text-sm font-medium text-slate-700">URL de la Foto</label>
+          <input type="text" id="pet-photo" name="pet-photo" [(ngModel)]="petFormModel().photoUrl" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+        </div>
+        <div class="flex justify-between items-center pt-2">
+          <div>
+            @if (editingPetId() !== null) {
+            <button type="button" (click)="deletePet()" class="text-red-600 hover:text-red-800 text-sm font-semibold">Eliminar Mascota</button>
+            }
+          </div>
+          <div class="flex space-x-3">
+            <button type="button" (click)="showPetModal.set(false)" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-lg hover:bg-slate-300 transition-colors">Cancelar</button>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+</div>

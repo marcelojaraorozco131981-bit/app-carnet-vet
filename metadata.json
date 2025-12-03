@@ -1,0 +1,5 @@
+{
+  "name": "Carnet de Salud para Mascotas",
+  "description": "Una aplicación para llevar un registro digital de la salud de tu mascota, incluyendo controles veterinarios, vacunas, medicamentos y próximos turnos.",
+  "requestFramePermissions": []
+}
