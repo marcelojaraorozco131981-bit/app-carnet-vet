@@ -39,6 +39,7 @@ export class AppComponent {
     { id: 2, petId: 1, type: 'Control', date: '2023-09-10', doctor: 'Dr. Smith', notes: 'Chequeo anual, todo en orden.' },
     { id: 3, petId: 1, type: 'Medicación', date: '2023-11-05', doctor: 'Dr. Jones', notes: 'Antibióticos por 7 días.' },
     { id: 4, petId: 1, type: 'Próximo Control', date: this.getFutureDate(30), time: '10:30', doctor: 'Dr. Smith', notes: 'Control de seguimiento anual.' },
+    { id: 10, petId: 1, type: 'Recordatorio Medicación', date: this.getFutureDate(3), time: '08:00', doctor: 'Auto-administrado', notes: 'Medicina para el corazón' },
     // Lucy's records
     { id: 5, petId: 2, type: 'Vacuna', date: '2021-07-15', doctor: 'Dr. Davis', notes: 'Primera ronda de vacunas.', nextDueDate: '2022-07-15' },
     { id: 6, petId: 2, type: 'Control', date: '2023-12-01', doctor: 'Dr. Davis', notes: 'Revisión dental.' },
@@ -62,7 +63,7 @@ export class AppComponent {
     notes: '',
     nextDueDate: this.getFutureDate(365)
   });
-  recordTypes: RecordType[] = ['Control', 'Vacuna', 'Medicación', 'Próximo Control'];
+  recordTypes: RecordType[] = ['Control', 'Vacuna', 'Medicación', 'Próximo Control', 'Recordatorio Medicación'];
 
   // Modal State for Pets
   showPetModal = signal(false);
@@ -114,7 +115,9 @@ export class AppComponent {
   upcomingControls = computed(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to start of day to include today's appointments
-    return this.selectedPetSortedRecords().filter(r => r.type === 'Próximo Control' && new Date(r.date) >= today);
+    return this.selectedPetSortedRecords().filter(r => 
+      (r.type === 'Próximo Control' || r.type === 'Recordatorio Medicación') && new Date(r.date) >= today
+    );
   });
   
   vaccinationSchedule = computed(() => {
@@ -212,7 +215,7 @@ export class AppComponent {
     const editingId = this.editingRecordId();
     // Clean up data before saving
     const dataToSave: Partial<MedicalRecord> = { ...recordData };
-    if (dataToSave.type !== 'Próximo Control') delete dataToSave.time;
+    if (dataToSave.type !== 'Próximo Control' && dataToSave.type !== 'Recordatorio Medicación') delete dataToSave.time;
     if (dataToSave.type !== 'Vacuna') delete dataToSave.nextDueDate;
 
     if (editingId !== null) {
@@ -381,6 +384,7 @@ export class AppComponent {
       case 'Vacuna': return 'bg-green-100 text-green-800';
       case 'Medicación': return 'bg-yellow-100 text-yellow-800';
       case 'Próximo Control': return 'bg-purple-100 text-purple-800';
+      case 'Recordatorio Medicación': return 'bg-pink-100 text-pink-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   }

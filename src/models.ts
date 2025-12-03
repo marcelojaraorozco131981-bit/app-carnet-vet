@@ -12,7 +12,7 @@ export interface VetClinic {
   phone: string;
 }
 
-export type RecordType = 'Control' | 'Vacuna' | 'Medicación' | 'Próximo Control';
+export type RecordType = 'Control' | 'Vacuna' | 'Medicación' | 'Próximo Control' | 'Recordatorio Medicación';
 
 export interface MedicalRecord {
   id: number;

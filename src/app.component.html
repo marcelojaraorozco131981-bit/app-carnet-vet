@@ -117,7 +117,7 @@
         @if (upcomingControls().length > 0) {
         <div class="space-y-3">
           @for (record of upcomingControls(); track record.id) {
-          <div class="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-purple-500">
+          <div [class]="'bg-white rounded-2xl shadow-lg p-4 border-l-4 ' + (record.type === 'Próximo Control' ? 'border-purple-500' : 'border-pink-500')">
             <div class="flex justify-between items-start">
               <div>
                 <p class="font-bold text-slate-800">{{ record.notes }}</p>
@@ -125,7 +125,7 @@
               </div>
               <div class="flex items-center gap-2">
                 <div class="text-right">
-                    <p class="text-sm font-semibold text-purple-700">{{ record.date | date:'dd MMM yyyy' }}</p>
+                    <p [class]="'text-sm font-semibold ' + (record.type === 'Próximo Control' ? 'text-purple-700' : 'text-pink-700')">{{ record.date | date:'dd MMM yyyy' }}</p>
                     @if(record.time) {
                         <p class="text-xs text-slate-500 flex items-center justify-end gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3 h-3"><path fill-rule="evenodd" d="M8 1.75a.75.75 0 0 1 .75.75v5.5c0 .414-.336.75-.75.75h-3.5a.75.75 0 0 1 0-1.5h2.75V2.5A.75.75 0 0 1 8 1.75Z" clip-rule="evenodd" /></svg>
@@ -201,10 +201,11 @@
                     <input type="date" id="filter-end-date" name="filter-end-date" [(ngModel)]="filterEndDate" class="block w-full text-sm border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md">
                 </div>
             </div>
-            <div class="flex gap-2 mt-3 text-xs">
+            <div class="flex gap-2 mt-3 text-xs flex-wrap">
                 <button (click)="setFilterType('Control')" [class]="'px-3 py-1 rounded-full transition-colors ' + (filterType() === 'Control' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700')">Control</button>
                 <button (click)="setFilterType('Vacuna')" [class]="'px-3 py-1 rounded-full transition-colors ' + (filterType() === 'Vacuna' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700')">Vacuna</button>
                 <button (click)="setFilterType('Medicación')" [class]="'px-3 py-1 rounded-full transition-colors ' + (filterType() === 'Medicación' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700')">Medicación</button>
+                <button (click)="setFilterType('Recordatorio Medicación')" [class]="'px-3 py-1 rounded-full transition-colors ' + (filterType() === 'Recordatorio Medicación' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700')">Recordatorio</button>
                 <button (click)="clearFilters()" class="ml-auto text-slate-500 hover:text-blue-600 font-semibold">Limpiar</button>
             </div>
         </div>
@@ -231,6 +232,11 @@
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c.102.046.206.086.314.122s.21.071.318.101M9.75 3.104c.162.08.32.162.472.246s.3.17.442.258m6.29 6.355c-.892.892-2.04 1.34-3.174 1.34-1.134 0-2.282-.448-3.174-1.34m0-3.174c.892-.892 2.04-1.34 3.174-1.34 1.134 0 2.282.448 3.174 1.34m0 3.174-3.174 3.174m3.174-3.174 3.174-3.174" />
                   </svg>
+                  }
+                  @case ('Recordatorio Medicación') {
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-pink-800">
+                      <path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15h14a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                    </svg>
                   }
                 }
                 <span>{{ record.type }}</span>
@@ -301,7 +307,7 @@
           <label for="date" class="block text-sm font-medium text-slate-700">Fecha</label>
           <input type="date" id="date" name="date" [(ngModel)]="newRecord().date" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
         </div>
-        @if (newRecord().type === 'Próximo Control') {
+        @if (newRecord().type === 'Próximo Control' || newRecord().type === 'Recordatorio Medicación') {
           <div>
             <label for="time" class="block text-sm font-medium text-slate-700">Hora</label>
             <input type="time" id="time" name="time" [(ngModel)]="newRecord().time" class="mt-1 block w-full pl-3 pr-2 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
